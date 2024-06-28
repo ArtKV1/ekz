@@ -2,87 +2,80 @@ import java.io.File
 
 fun fillPersons() : List<Person>
 {
-    val file = File("ФиЛП_2024 - 36_1.csv");
-    val lines = file.readLines();
-    var i = 0
     val persons = mutableListOf<Person>()
-    for (line in lines)
-    {
-        if (i == 0)
-        {
-            val columns = line.split(",");
+    for (p in 0..1) {
+        var file = File("")
+        if (p == 0) {
+            file = File("ФиЛП_2024 - 36_1.csv");
+        } else {
+            file = File("ФиЛП_2024 - 36_2.csv");
         }
-        if (i > 1)
-        {
-            val person = Person()
-            val columns = line.split(",");
-
-            if (columns[0] == "")
-            {
-                break;
+        val lines = file.readLines();
+        var i = 0
+        for (line in lines) {
+            if (i == 0) {
+                val columns = line.split(",");
             }
+            if (i > 1) {
+                val person = Person()
+                val columns = line.split(",");
 
-            person.id = columns[0].toInt();
-            person.fullname = columns[1];
-            person.extraPoint = columns[2].toInt();
-            person.git = columns[3];
-
-            var count: Int = 0;
-            for (j in 4..15)
-            {
-                if (columns[j] == "+")
-                {
-                    count += 1;
+                if (columns[0] == "") {
+                    break;
                 }
-            }
-            person.attendanceL = count;
 
-            count = 0;
-            for (j in 16..27)
-            {
-                if (columns[j] == "+")
-                {
-                    count++;
+                person.id = columns[0].toInt();
+                person.fullname = columns[1];
+                person.extraPoint = columns[2].toInt();
+                person.git = columns[3];
+
+                var count: Int = 0;
+                for (j in 4..15) {
+                    if (columns[j] == "+") {
+                        count += 1;
+                    }
                 }
-            }
-            person.attendanceP = count;
+                person.attendanceL = count;
 
-            var listLR = columns.slice(28..34)
-            person.lr = listLR
+                count = 0;
+                for (j in 16..27) {
+                    if (columns[j] == "+") {
+                        count++;
+                    }
+                }
+                person.attendanceP = count;
 
-            var listEP = columns.slice(35..39)
-            person.ep = listEP
+                var listLR = columns.slice(28..34)
+                person.lr = listLR
 
-            var listKR = columns.slice(40..42)
-            person.kr = listKR
+                var listEP = columns.slice(35..39)
+                person.ep = listEP
 
-            var allow = columns[79]
-            var allowance: Int = 0
-            if (allow == "недопуск")
-            {
-                allowance = 1;
-            }
-            else if (allow == "допуск")
-            {
-                allowance = 2;
-            }
-            else if (allow == "САМОКАТ")
-            {
-                allowance = 3;
-            }
-            else if (allow == "ХОРОШО")
-            {
-                allowance = 4;
-            }
-            else if (allow == "ОТЛИЧНО")
-            {
-                allowance = 5;
-            }
-            person.allowance = allowance;
+                var listKR = columns.slice(40..42)
+                person.kr = listKR
 
-            persons.add(person);
+                var allow = columns[79]
+                var allowance: Int = 0
+                if (allow == "недопуск") {
+                    allowance = 1;
+                } else if (allow == "допуск") {
+                    allowance = 2;
+                } else if (allow == "САМОКАТ") {
+                    allowance = 3;
+                } else if (allow == "ХОРОШО") {
+                    allowance = 4;
+                } else if (allow == "ОТЛИЧНО") {
+                    allowance = 5;
+                }
+                person.allowance = allowance;
+
+                var attestation = columns[78]
+                person.attestation = attestation;
+
+                persons.add(person);
+            }
+            i++;
         }
-        i++;
     }
 
     return persons;

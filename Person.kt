@@ -1,4 +1,4 @@
-public class Person
+class Person
 {
     var id: Int = 0
 
@@ -19,4 +19,6 @@ public class Person
     var kr: List<String> = listOf()
 
     var allowance: Int = 0
+
+    var attestation: String = ""
 }
