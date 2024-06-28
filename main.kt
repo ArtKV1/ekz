@@ -2,34 +2,21 @@ fun main(args : Array<String>)
 {
     val persons = fillPersons()
 
-    //#1
+    //1 Прочитать суммарные баллы и оценки. Найти лабораторную работу, которую
+    //выполнили наибольшее количество человек на любую оценку среди неполучивших допуск.
+    //Найти КР, которую выполнили наименьшее количество человек хотя бы на допуск среди не
+    //поливших допуск.
     findMaxAndMin(persons)
-    //#2
+    //2 Рассчитать самостоятельно в программе баллы за посещаемость, КР, ЛР и ЭП так же,
+    //как в документе. Найти сумму баллов и вывести количество баллов за посещаемость, ЛР, ЭП,
+    //КР, ИТОГО для каждого студента.
     pointsForKrLrEp(persons)
-    //#3
-    val r = calculateRating(persons)
-    val sortedRating = r.sortedWith(compareByDescending<Rating> { it.totalPercent > 30 }.thenByDescending { it.totalPercent }.thenByDescending { it.allowance })
-    val bestOfUnallowance = sortedRating.filter {it.total == "1"}.take(5)
-    val worstOfAllowance = sortedRating.filter {it.total == "2"}.takeLast(5)
-
-    for (i in sortedRating)
-    {
-        val assessment = if (i.total == "5") { "Отлично" } else if (i.total == "4") { "Хорошо" } else if (i.total == "3") { "Самокат" } else if (i.total == "2") { "допуск" } else { "недопуск" }
-        println("Группа: ${i.group}, Фамилия ИО: ${i.fullName}, Аттестация: ${i.attestation}, \tЭкзамен: ${assessment}, Посещаемость: ${i.attendance}%, ЛР: ${i.lr}%, ЭП: ${i.ep}%, КР: ${i.kr}%, Допуск: ${i.allowance}%, Итого: ${i.totalPercent}%")
-    }
-    println()
-    println()
-    for (i in bestOfUnallowance)
-    {
-        val assessment = if (i.total == "5") { "Отлично" } else if (i.total == "4") { "Хорошо" } else if (i.total == "3") { "Самокат" } else if (i.total == "2") { "допуск" } else { "недопуск" }
-        println("Группа: ${i.group}, Фамилия ИО: ${i.fullName}, Аттестация: ${i.attestation}, \tЭкзамен: ${assessment}, Посещаемость: ${i.attendance}%, ЛР: ${i.lr}%, ЭП: ${i.ep}%, КР: ${i.kr}%, Допуск: ${i.allowance}%, Итого: ${i.totalPercent}%")
-    }
-    println()
-    println()
-
-    for (i in worstOfAllowance)
-    {
-        val assessment = if (i.total == "5") { "Отлично" } else if (i.total == "4") { "Хорошо" } else if (i.total == "3") { "Самокат" } else if (i.total == "2") { "допуск" } else { "недопуск" }
-        println("Группа: ${i.group}, Фамилия ИО: ${i.fullName}, Аттестация: ${i.attestation}, \tЭкзамен: ${assessment}, Посещаемость: ${i.attendance}%, ЛР: ${i.lr}%, ЭП: ${i.ep}%, КР: ${i.kr}%, Допуск: ${i.allowance}%, Итого: ${i.totalPercent}%")
-    }
+    //3 Сформировать рейтинг так же, как и в разделе рейтинг программно. Вывести 5
+    //худших среди получивших допуск, сгруппировав их по группам. Вывести 5 лучших среди не
+    //получивших допуск, сгруппировав их по группам в том же формате, как и в разделе рейтинг,
+    //то есть выводить проценты сделанного.
+    printRating(persons)
+    //4 Сформировать программно раздел группы так же, как сформировано в таблице и
+    //вывести на экран.
+    printTable(persons)
 }
