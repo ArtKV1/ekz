@@ -1,5 +1,7 @@
 class Person
 {
+    var group: String = ""
+
     var id: Int = 0
 
     var fullname: String = ""

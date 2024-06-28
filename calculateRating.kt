@@ -40,7 +40,7 @@ fun calculateRating(persons: List<Person>): List<Rating>
 //        println("Группа: 36_1, Фамилия ИО: ${persons[i].fullname}, Аттестация: ${persons[i].attestation}, Экзамен: ${totalString}, Посещаемость: ${round(atPercent).toInt()}%, ЛР: ${round(lr[i] / 35 * 100).toInt()}%, ЭП: ${round(ep[i].toDouble() / 25 * 100).toInt()}%, КР: ${round(kr[i].toDouble() / 30 * 100).toInt()}%, Допуск: ${String.format("%.1f", (allowance / 75 * 100)).replace(",", ".")}%, Итого: ${round(total[i]).toInt()}%")
 
         val personRating = Rating()
-        personRating.group = "36_1"
+        personRating.group = persons[i].group
         personRating.fullName = persons[i].fullname
         personRating.attestation = persons[i].attestation
         personRating.total = totalString
