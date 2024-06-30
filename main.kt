@@ -1,3 +1,7 @@
+fun List<Person>.personForEach(action: (Person) -> Unit): Unit
+{
+    for (element in this) action(element)
+}
 fun main(args : Array<String>)
 {
     val persons = fillPersons()
@@ -19,7 +23,7 @@ fun main(args : Array<String>)
     //то есть выводить проценты сделанного.
     println()
     println()
-    printRating(persons)
+    SortRating(persons)
     //4 Сформировать программно раздел группы так же, как сформировано в таблице и
     //вывести на экран.
     println()

@@ -1,180 +1,75 @@
 import java.io.File
 
-fun fillPersons() : List<Person>
-{
+fun fillPersons(): List<Person> {
     val persons = mutableListOf<Person>()
-    for (p in 0..2) {
-        var file = File("");
-        if (p == 0)
-        {
-            file = File("ФиЛП_2024 - 36_1.csv")
-        }
-        else if (p == 1)
-        {
-            file = File("ФиЛП_2024 - 36_2.csv")
-        }
-        else
-        {
-            file = File("ФиЛП_2024 - 39.csv")
-        }
-        val lines = file.readLines();
-        var i = 0
-        if (p < 2)
-        {
-            for (line in lines)
-            {
-                if (i == 0)
-                {
-                    val columns = line.split(",");
+
+    val fileNames = listOf(
+        "ФиЛП_2024 - 36_1.csv",
+        "ФиЛП_2024 - 36_2.csv",
+        "ФиЛП_2024 - 39.csv"
+    )
+
+    for ((index, fileName) in fileNames.withIndex()) {
+        val file = File(fileName)
+        val lines = file.readLines()
+
+        for ((i, line) in lines.withIndex()) {
+            if (i > 1) {
+                val columns = line.split(",")
+
+
+                if (columns[0].isEmpty()) {
+                    break
                 }
-                if (i > 1)
-                {
-                    val person = Person()
-                    val columns = line.split(",");
 
-                    if (columns[0] == "")
-                    {
-                        break;
-                    }
-                    if (p == 0)
-                    {
-                        person.group = "36_1"
-                    }
-                    else
-                    {
-                        person.group = "36_2"
-                    }
-                    person.id = columns[0].toInt();
-                    person.fullname = columns[1];
-                    person.extraPoint = columns[2].toInt();
-                    person.git = columns[3];
+                val person = Person()
+                person.id = columns[0].toInt()
+                person.fullname = columns[1]
+                person.extraPoint = if (columns[2] != "") { columns[2].toInt() } else { 0 }
+                person.git = columns[3]
 
-                    var count: Int = 0;
-                    for (j in 4..15)
-                    {
-                        if (columns[j] == "+")
-                        {
-                            count += 1;
-                        }
-                    }
-                    person.attendanceL = count;
 
-                    count = 0;
-                    for (j in 16..27)
-                    {
-                        if (columns[j] == "+")
-                        {
-                            count++;
-                        }
-                    }
-                    person.attendanceP = count;
+                person.attendanceL = columns.slice(4..15).count { it == "+" }
 
-                    var listLR = columns.slice(28..34)
-                    person.lr = listLR
 
-                    var listEP = columns.slice(35..39)
-                    person.ep = listEP
+                val endIndex = if (index < 2) 27 else 29
+                person.attendanceP = columns.slice(16..endIndex).count { it == "+" }
 
-                    var listKR = columns.slice(40..42)
-                    person.kr = listKR
 
-                    var allow = columns[79]
-                    var allowance: Int = 0
-                    if (allow == "недопуск")
-                    {
-                        allowance = 1;
-                    } else if (allow == "допуск")
-                    {
-                        allowance = 2;
-                    } else if (allow == "САМОКАТ")
-                    {
-                        allowance = 3;
-                    } else if (allow == "ХОРОШО")
-                    {
-                        allowance = 4;
-                    } else if (allow == "ОТЛИЧНО")
-                    {
-                        allowance = 5;
-                    }
-                    person.allowance = allowance;
+                val lrIndex = if (index < 2) 28 else 30
+                person.lr = columns.slice(lrIndex..(lrIndex + 6))
 
-                    var attestation = columns[78]
-                    person.attestation = attestation;
+                val epIndex = if (index < 2) 35 else 37
+                person.ep = columns.slice(epIndex..(epIndex + 4))
 
-                    persons.add(person);
+                val krIndex = if (index < 2) 40 else 42
+                person.kr = columns.slice(krIndex..(krIndex + 2))
+
+
+                person.allowance = when (columns[79]) {
+                    "недопуск" -> 1
+                    "допуск" -> 2
+                    "САМОКАТ" -> 3
+                    "ХОРОШО" -> 4
+                    "ОТЛИЧНО" -> 5
+                    else -> 0
                 }
-                i++;
-            }
-        }
-        else
-        {
-            for (line in lines) {
-                if (i == 0) {
-                    val columns = line.split(",");
+
+
+                person.attestation = columns[if (index < 2) 78 else 80]
+
+
+                person.group = when (index) {
+                    0 -> "36_1"
+                    1 -> "36_2"
+                    2 -> "39"
+                    else -> ""
                 }
-                if (i > 1) {
-                    val person = Person()
-                    val columns = line.split(",");
 
-                    if (columns[0] == "") {
-                        break;
-                    }
-
-                    person.group = "39"
-                    person.id = columns[0].toInt();
-                    person.fullname = columns[1];
-                    person.extraPoint = columns[2].toInt();
-                    person.git = columns[3];
-
-                    var count: Int = 0;
-                    for (j in 4..15) {
-                        if (columns[j] == "+") {
-                            count += 1;
-                        }
-                    }
-                    person.attendanceL = count;
-
-                    count = 0;
-                    for (j in 16..29) {
-                        if (columns[j] == "+") {
-                            count++;
-                        }
-                    }
-                    person.attendanceP = count;
-
-                    var listLR = columns.slice(30..36)
-                    person.lr = listLR
-
-                    var listEP = columns.slice(37..41)
-                    person.ep = listEP
-
-                    var listKR = columns.slice(42..44)
-                    person.kr = listKR
-
-                    var allow = columns[81]
-                    var allowance: Int = 0
-                    if (allow == "недопуск") {
-                        allowance = 1;
-                    } else if (allow == "допуск") {
-                        allowance = 2;
-                    } else if (allow == "САМОКАТ") {
-                        allowance = 3;
-                    } else if (allow == "ХОРОШО") {
-                        allowance = 4;
-                    } else if (allow == "ОТЛИЧНО") {
-                        allowance = 5;
-                    }
-                    person.allowance = allowance;
-
-                    var attestation = columns[80]
-                    person.attestation = attestation;
-
-                    persons.add(person);
-                }
-                i++;
+                persons.add(person)
             }
         }
     }
 
-    return persons;
+    return persons
 }

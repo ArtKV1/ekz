@@ -1,58 +1,60 @@
-import kotlin.math.round
+import kotlin.math.*
 
-fun calculatingAttendance2(persons: List<Person>) : List<Double>
-{
-    val list = mutableListOf<Double>()
-
-    for (person in persons)
-    {
-        var attendanceP = (person.attendanceP).toDouble() / 12 * 5
-        var attendanceL = (person.attendanceL).toDouble() / 12 * 5
-
-        var roundedAttendanceP = String.format("%.1f", attendanceP).replace(",", ".").toDouble()
-        var roundedAttendanceL = String.format("%.1f", attendanceL).replace(",", ".").toDouble()
-
-        var attendance = roundedAttendanceP + roundedAttendanceL
-
-        list.add(attendance)
+fun calculatingAttendance2(person: Person): Double {
+    return when (person.group) {
+        "39" -> (person.attendanceP.toDouble() / 14 * 5).roundTo1Decimal() + (person.attendanceL.toDouble() / 12 * 5).roundTo1Decimal()
+        else -> (person.attendanceP.toDouble() / 12 * 5).roundTo1Decimal() + (person.attendanceL.toDouble() / 12 * 5).roundTo1Decimal()
     }
-
-    return list
 }
 
 
-fun calculateRating(persons: List<Person>): List<Rating>
+fun Double.roundTo1Decimal(): Double
 {
-    val ratings = mutableListOf<Rating>()
+    return "%.1f".format(this).replace(',', '.').toDouble()
+}
 
-    val at = calculatingAttendance(persons)
-    val at2 = calculatingAttendance2(persons)
-    val kr = calculatingKr(persons)
-    val lr = calculatingLr(persons)
-    val ep = calculatingEp(persons)
-    val total = calculatingTheTotal(calculatingAttendance(persons), calculatingKr(persons), calculatingLr(persons), calculatingEp(persons), persons)
-    for (i in 0 ..< at.size)
-    {
-        val allowance = at[i] + lr[i] + kr[i]
-        val totalString = if (allowance / 75 < 0.4) { "1" } else if (total[i] / 100 >= 0.9) {"5"} else if (total[i] / 100 >= 0.75) { "4" }
-                            else if (total[i] / 100 >= 0.6) { "3" } else { "2" }
-        val atPercent = String.format("%.0f", (at2[i] / 10 * 100)).replace(",", ".").toDouble()
-//        println("Группа: 36_1, Фамилия ИО: ${persons[i].fullname}, Аттестация: ${persons[i].attestation}, Экзамен: ${totalString}, Посещаемость: ${round(atPercent).toInt()}%, ЛР: ${round(lr[i] / 35 * 100).toInt()}%, ЭП: ${round(ep[i].toDouble() / 25 * 100).toInt()}%, КР: ${round(kr[i].toDouble() / 30 * 100).toInt()}%, Допуск: ${String.format("%.1f", (allowance / 75 * 100)).replace(",", ".")}%, Итого: ${round(total[i]).toInt()}%")
+fun calculateRatingForOnePerson(person: Person): Rating
+{
+    val allowanceScore = calculatingAttendance(person) + calculatingLr(person) + calculatingKr(person)
+    val totalScore = calculatingTheTotal(calculatingAttendance(person), calculatingKr(person), calculatingLr(person), calculatingEp(person), person)
 
-        val personRating = Rating()
-        personRating.group = persons[i].group
-        personRating.fullName = persons[i].fullname
-        personRating.attestation = persons[i].attestation
-        personRating.total = totalString
-        personRating.attendance = round(atPercent).toInt()
-        personRating.lr = round(lr[i] / 35 * 100).toInt()
-        personRating.ep = round(ep[i].toDouble() / 25 * 100).toInt()
-        personRating.kr  = round(kr[i].toDouble() / 30 * 100).toInt()
-        personRating.allowance = String.format("%.1f", (allowance / 75 * 100)).replace(",", ".").toDouble()
-        personRating.totalPercent = round(total[i]).toInt()
+    val allowancePercent = (allowanceScore / 75 * 100)
+    val atPercent = (calculatingAttendance2(person) / 10 * 100).roundToInt()
 
-        ratings.add(personRating)
+    val totalString = when {
+        allowancePercent < 40 -> "1"
+        totalScore / 100 >= 0.9 -> "5"
+        totalScore / 100 >= 0.75 -> "4"
+        totalScore / 100 >= 0.6 -> "3"
+        else -> "2"
     }
 
-    return ratings
+    val personRating = Rating()
+    personRating.group = person.group
+    personRating.fullName = person.fullname
+    personRating.attestation = person.attestation
+    personRating.total = totalString
+    personRating.attendance = atPercent
+    personRating.lr = (calculatingLr(person) / 35 * 100).roundToInt()
+    personRating.ep = (calculatingEp(person).toDouble() / 25 * 100).roundToInt()
+    personRating.kr = (calculatingKr(person).toDouble() / 30 * 100).roundToInt()
+    personRating.allowance = allowancePercent.roundTo1Decimal()
+    personRating.totalPercent = round(totalScore).toInt()
+
+    return personRating
 }
+
+fun calculateRating(persons: List<Person>, index: Int = 0, rating: MutableList<Rating> = mutableListOf()): List<Rating>
+{
+
+    if (persons.size == index) return rating
+
+    val personRating: Rating = calculateRatingForOnePerson(persons[index])
+
+    rating.add(personRating)
+
+    return calculateRating(persons, index + 1, rating)
+}
+
+
+

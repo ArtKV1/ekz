@@ -1,46 +1,32 @@
-fun printGroup(persons: List<Person>)
-{
-    val at = calculatingAttendance(persons)
-    val lr = calculatingLr(persons)
-    val kr = calculatingKr(persons)
+fun printGroup(persons: List<Person>, index: Int = 0, mapOfGroups: MutableMap<String, MutableList<Int>> = mutableMapOf()) {
 
-    val rating = calculateRating(persons)
-
-    var sum361 = 0.0
-    var sum362 = 0.0
-    var sum39 = 0.0
-    var personsCount361 = 0.0
-    var personsCount362 = 0.0
-    var personsCount39 = 0.0
-    for (i in 0..<persons.size)
+    if (persons.size == index)
     {
-        if ((persons[i].group == "36_1") and ((rating[i].total).toInt() > 2))
-        {
-            sum361 += at[i] + lr[i] + kr[i]
-            personsCount361++
-        }
-        else if ((persons[i].group == "36_2") and ((rating[i].total).toInt() > 2))
-        {
-            sum362 += at[i] + lr[i] + kr[i]
-            personsCount362++
-        }
-        else if ((persons[i].group == "39") and ((rating[i].total).toInt() > 2))
-        {
-            sum39 += at[i] + lr[i] + kr[i]
-            personsCount39++
-        }
+        println("Группа в которой наименьший средний балл на допуск, среди тех кто получил оценки 3,4,5: ${mapOfGroups.minBy {it.value[1] / it.value[0]}.key}")
+        return
     }
 
-    if ((sum361 / personsCount361 < sum362 / personsCount361) and (sum361 / personsCount361 < sum39 / personsCount39))
-    {
-        println("Группа в которой наименьший средний балл на допуск, среди тех кто получил оценки 3,4,5: 36_1")
+    val person: Person = persons[index]
+
+    val at = calculatingAttendance(person)
+    val lr = calculatingLr(person)
+    val kr = calculatingKr(person)
+
+    val rating = calculateRatingForOnePerson(persons[index])
+
+    if (rating.total.toInt() > 2) {
+        val list = mapOfGroups.getOrPut(person.group) { mutableListOf() }
+
+        if (!list.isEmpty()) {
+            list[0] = list[0] + 1
+            list[1] = list[1] + (lr + kr + at).toInt()
+        } else {
+            list.add(1)
+            list.add((lr + kr + at).toInt())
+        }
+
+        mapOfGroups[person.group] = list
     }
-    else if ((sum362 / personsCount362 < sum361 / personsCount361) and (sum362 / personsCount362 < sum39 / personsCount39))
-    {
-        println("Группа в которой наименьший средний балл на допуск, среди тех кто получил оценки 3,4,5: 36_2")
-    }
-    else
-    {
-        println("Группа в которой наименьший средний балл на допуск, среди тех кто получил оценки 3,4,5: 39")
-    }
+
+    return printGroup(persons, index + 1, mapOfGroups)
 }
